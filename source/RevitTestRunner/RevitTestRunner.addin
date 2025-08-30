@@ -1,0 +1,15 @@
+﻿<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>RevitTestRunner</Name>
+        <Assembly>RevitTestRunner\RevitTestRunner.dll</Assembly>
+        <AddInId>673A06AA-FA5F-491F-9E50-3B4B3CC5269A</AddInId>
+        <FullClassName>RevitTestRunner.Application</FullClassName>
+        <VendorId>Development</VendorId>
+        <VendorDescription></VendorDescription>
+        <VendorEmail></VendorEmail>
+    </AddIn>
+    <ManifestSettings>
+        <UseRevitContext>False</UseRevitContext>
+        <ContextName>RevitTestRunner</ContextName>
+    </ManifestSettings>
+</RevitAddIns>
