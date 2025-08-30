@@ -6,6 +6,9 @@ using Autodesk.Revit.UI;
 
 using Nice3point.Revit.Toolkit.External;
 
+using RevitTestRunner.ViewModels;
+using RevitTestRunner.Views;
+
 using Xunit;
 using Xunit.Runner.Common;
 using Xunit.Sdk;
@@ -16,11 +19,16 @@ namespace RevitTestRunner.Commands;
 [Transaction(TransactionMode.Manual)]
 public class StartupCommand : ExternalCommand
 {
+    private RevitTestRunnerViewModel viewModel = new();
+
     public override void Execute()
     {
         // Result = ActualExecute();
 
         DoSomethingElse();
+
+        var view = new RevitTestRunnerView(viewModel);
+        view.ShowDialog();
     }
 
     private void DoSomethingElse()
@@ -43,7 +51,7 @@ public class StartupCommand : ExternalCommand
             TestFrameworkOptions.ForExecution(assembly.Configuration),
             assembly.Configuration.Filters);
 
-        controller.FindAndRun(new CustomSink(), settings);
+        controller.FindAndRun(new CustomSink(viewModel), settings);
     }
 
     private Result ActualExecute()
@@ -94,12 +102,35 @@ public class StartupCommand : ExternalCommand
         }
     }
 
-    private class CustomSink : IMessageSink
+    private class CustomSink(
+        RevitTestRunnerViewModel viewModel) : IMessageSink, IRunnerLogger
     {
         public bool OnMessage(IMessageSinkMessage message)
         {
-            Console.WriteLine(message);
+            viewModel.Messages.Add(message.ToString()!);
+
             return true;
         }
+
+        public void LogMessage(StackFrameInfo stackFrame, string message)
+            => viewModel.Messages.Add(message);
+
+        public void LogImportantMessage(StackFrameInfo stackFrame, string message)
+            => viewModel.Messages.Add(message);
+
+        public void LogWarning(StackFrameInfo stackFrame, string message)
+            => viewModel.Messages.Add(message);
+
+        public void LogError(StackFrameInfo stackFrame, string message)
+            => viewModel.Messages.Add(message);
+
+        public void LogRaw(string message)
+            => viewModel.Messages.Add(message);
+
+        public void WaitForAcknowledgment()
+        {
+        }
+
+        public object LockObject { get; }
     }
 }

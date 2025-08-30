@@ -13,10 +13,8 @@
     Height="450"
     Width="800">
     <Grid>
-        <TextBlock
-            Text="RevitTestRunner"
-            FontSize="60"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center" />
+        <ListView VerticalAlignment="Top" 
+                  HorizontalAlignment="Left" 
+                  ItemsSource="{Binding Messages}" />
     </Grid>
 </Window>
