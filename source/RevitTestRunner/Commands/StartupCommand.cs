@@ -43,16 +43,12 @@ public class StartupCommand : ExternalCommand
                              assembly.AssemblyFileName);
 
         using var testExecutionSink = new TestExecutionSink();
-        controller.Find(
+
+        controller.FindAndRun(
             testExecutionSink,
-            new FrontControllerFindSettings(
-                TestFrameworkOptions.ForDiscovery(
-                    assembly.Configuration)));
-        controller.Run(
-            testExecutionSink,
-            new FrontControllerRunSettings(
-                TestFrameworkOptions.ForExecution(assembly.Configuration),
-                testExecutionSink.TestNames));
+            new FrontControllerFindAndRunSettings(
+                TestFrameworkOptions.ForDiscovery(assembly.Configuration),
+                TestFrameworkOptions.ForExecution(assembly.Configuration)));
 
         testExecutionSink.Finished.WaitOne(); // block until tests finish
 
