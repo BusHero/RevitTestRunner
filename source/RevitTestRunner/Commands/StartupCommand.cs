@@ -6,6 +6,8 @@ using Autodesk.Revit.UI;
 
 using Nice3point.Revit.Toolkit.External;
 
+using Xunit;
+
 namespace RevitTestRunner.Commands;
 
 [UsedImplicitly]
@@ -21,7 +23,8 @@ public class StartupCommand : ExternalCommand
     {
         try
         {
-            const string dllPath = @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.Tests\bin\Debug\net8.0\RevitTestRunner.Tests.dll";
+            const string dllPath =
+                @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.Tests\bin\Debug\net8.0\RevitTestRunner.Tests.dll";
 
             if (!File.Exists(dllPath))
             {
@@ -29,23 +32,37 @@ public class StartupCommand : ExternalCommand
                 return Result.Failed;
             }
 
-            var asm = Assembly.LoadFrom(dllPath);
-            var wallHelperType = asm.GetType("RevitTestRunner.Tests.WallHelper");
-            var method = wallHelperType?.GetMethod("GetWallTypeName", BindingFlags.Public | BindingFlags.Static);
+            var testAssembly = Assembly.LoadFrom(dllPath);
+            // TODO: Load real test assembly instead
+            var testMethods = testAssembly.GetTypes()
+                .SelectMany(t => t.GetMethods())
+                .Where(m => m.GetCustomAttributes(typeof(FactAttribute), false).Length != 0
+                            || m.GetCustomAttributes(typeof(TheoryAttribute), false).Length != 0);
 
-            if (method == null)
+            var passed = 0;
+            var failed = 0;
+
+            foreach (var method in testMethods)
             {
-                TaskDialog.Show("Test Harness", "Test method not found.");
-                return Result.Failed;
+                try
+                {
+                    var instance = method.IsStatic ? null : Activator.CreateInstance(method.DeclaringType);
+                    method.Invoke(instance, null);
+                    passed++;
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    TaskDialog.Show("Test Failed", $"{method.Name}: {ex.InnerException?.Message ?? ex.Message}");
+                }
             }
 
-            var result = method.Invoke(null, null)?.ToString() ?? "(null)";
-            TaskDialog.Show("Test Harness", $"Test executed: {result}");
+            TaskDialog.Show("Test Results", $"{passed} passed, {failed} failed");
             return Result.Succeeded;
         }
         catch (Exception ex)
         {
-            TaskDialog.Show("RevitTestRunner", ex.Message);
+            TaskDialog.Show("Harness Error", ex.ToString());
             return Result.Failed;
         }
     }
