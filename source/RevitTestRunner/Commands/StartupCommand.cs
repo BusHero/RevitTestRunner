@@ -7,6 +7,8 @@ using Autodesk.Revit.UI;
 using Nice3point.Revit.Toolkit.External;
 
 using Xunit;
+using Xunit.Runner.Common;
+using Xunit.Sdk;
 
 namespace RevitTestRunner.Commands;
 
@@ -16,7 +18,32 @@ public class StartupCommand : ExternalCommand
 {
     public override void Execute()
     {
-        Result = ActualExecute();
+        // Result = ActualExecute();
+
+        DoSomethingElse();
+    }
+
+    private void DoSomethingElse()
+    {
+        var project = new XunitProject();
+
+        project.Add(new XunitProjectAssembly(
+            project,
+            @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.xunitv3.Tests\bin\Debug\net8.0\RevitTestRunner.xunitv3.Tests.dll",
+            new AssemblyMetadata(3, ".netcoreapp")));
+
+        var assembly = project.Assemblies.First();
+
+        var controller = XunitFrontController.Create(assembly)
+                         ?? throw new ArgumentException("not an xUnit.net test assembly: {0}",
+                             assembly.AssemblyFileName);
+
+        var settings = new FrontControllerFindAndRunSettings(
+            TestFrameworkOptions.ForDiscovery(assembly.Configuration),
+            TestFrameworkOptions.ForExecution(assembly.Configuration),
+            assembly.Configuration.Filters);
+
+        controller.FindAndRun(new CustomSink(), settings);
     }
 
     private Result ActualExecute()
@@ -64,6 +91,15 @@ public class StartupCommand : ExternalCommand
         {
             TaskDialog.Show("Harness Error", ex.ToString());
             return Result.Failed;
+        }
+    }
+
+    private class CustomSink : IMessageSink
+    {
+        public bool OnMessage(IMessageSinkMessage message)
+        {
+            Console.WriteLine(message);
+            return true;
         }
     }
 }
