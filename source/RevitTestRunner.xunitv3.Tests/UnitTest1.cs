@@ -8,3 +8,12 @@ public class UnitTest1
         Assert.True(true);
     }
 }
+
+public class RevitApiTests
+{
+    [Fact]
+    public void Foo()
+    {
+        
+    }
+}
