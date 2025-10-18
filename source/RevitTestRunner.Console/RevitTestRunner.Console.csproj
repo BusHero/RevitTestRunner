@@ -7,8 +7,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="xunit.v3.runner.utility" Version="3.0.1" />
-    </ItemGroup>
-
 </Project>

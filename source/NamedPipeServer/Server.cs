@@ -2,12 +2,13 @@
 
 namespace NamedPipeServer;
 
-public class NamedPipeServer
+public class Server(
+    string pipeName)
 {
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         await using var pipeServer = new NamedPipeServerStream(
-            "testpipe",
+            pipeName,
             PipeDirection.InOut);
 
         await pipeServer.WaitForConnectionAsync(cancellationToken);

@@ -19,9 +19,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoFixture.Xunit3" Version="4.19.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
         <PackageReference Include="Shouldly" Version="4.3.0" />
-        <PackageReference Include="xunit.v3" Version="3.0.1"/>
+        <PackageReference Include="xunit.v3" Version="3.1.0" />
         <!--        <PackageReference Include="Nice3point.Revit.Build.Tasks" Version="3.0.1"/>-->
         <!--        <PackageReference Include="Nice3point.Revit.Toolkit" Version="$(RevitVersion).*"/>-->
         <!--        <PackageReference Include="Nice3point.Revit.Extensions" Version="$(RevitVersion).*"/>-->

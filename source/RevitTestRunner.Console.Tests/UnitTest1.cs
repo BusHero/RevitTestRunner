@@ -2,21 +2,25 @@ using System.IO.Pipes;
 using System.Security.Principal;
 using System.Text;
 
+using AutoFixture.Xunit3;
+
+using NamedPipeServer;
+
 using Shouldly;
 
 namespace RevitTestRunner.Console.Tests;
 
 public class UnitTest1
 {
-    [Fact]
-    public async Task OpenNamedPipeClient()
+    [Theory, AutoData]
+    public async Task OpenNamedPipeClient(string pipeName)
     {
-        var pipeServer = new NamedPipeServer.NamedPipeServer();
+        var pipeServer = new Server(pipeName);
         _ = pipeServer.StartAsync(TestContext.Current.CancellationToken);
 
         var pipeClient = new NamedPipeClientStream(
             ".",
-            "testpipe",
+            pipeName,
             PipeDirection.InOut,
             PipeOptions.None,
             TokenImpersonationLevel.Impersonation);
