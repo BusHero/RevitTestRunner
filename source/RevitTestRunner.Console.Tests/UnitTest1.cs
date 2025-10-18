@@ -1,19 +1,67 @@
-using Xunit.Runner.Common;
+using System.IO.Pipes;
+using System.Security.Principal;
+using System.Text;
+
+using Shouldly;
 
 namespace RevitTestRunner.Console.Tests;
 
 public class UnitTest1
 {
     [Fact]
-    public void Test1()
+    public async Task OpenNamedPipeClient()
     {
-        var project = new XunitProject();
+        var pipeServer = new NamedPipeServer.NamedPipeServer();
+        _ = pipeServer.StartAsync(TestContext.Current.CancellationToken);
 
-        project.Add(new XunitProjectAssembly(
-            project,
-            @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.xunitv3.Tests\bin\Debug\net8.0\RevitTestRunner.xunitv3.Tests.dll",
-            new AssemblyMetadata(3, ".netcoreapp")));
+        var pipeClient = new NamedPipeClientStream(
+            ".",
+            "testpipe",
+            PipeDirection.InOut,
+            PipeOptions.None,
+            TokenImpersonationLevel.Impersonation);
+        using var source = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 
-        var controller = XunitFrontController.Create(project.Assemblies.First());
+        await pipeClient.ConnectAsync(source.Token);
+        //
+        // var stream = new StreamString(pipeClient);
+        //
+        // using var streamReader = new StreamReader(pipeClient);
+        // var foo = await streamReader.ReadLineAsync(source.Token);
+        // foo.ShouldBe("I am the one true server!");
+    }
+}
+
+public class StreamString(
+    Stream ioStream)
+{
+    private readonly UnicodeEncoding _streamEncoding = new();
+
+    public string ReadString()
+    {
+        var len = ioStream.ReadByte() * 256;
+        len += ioStream.ReadByte();
+        var inBuffer = new byte[len];
+        ioStream.ReadExactly(inBuffer, 0, len);
+
+        return _streamEncoding.GetString(inBuffer);
+    }
+
+    public int WriteString(string outString)
+    {
+        var outBuffer = _streamEncoding.GetBytes(outString);
+        var len = outBuffer.Length;
+
+        if (len > ushort.MaxValue)
+        {
+            len = ushort.MaxValue;
+        }
+
+        ioStream.WriteByte((byte)(len / 256));
+        ioStream.WriteByte((byte)(len & 255));
+        ioStream.Write(outBuffer, 0, len);
+        ioStream.Flush();
+
+        return outBuffer.Length + 2;
     }
 }

@@ -7,6 +7,7 @@ using RevitTestRunner.Views;
 
 using Xunit;
 using Xunit.Runner.Common;
+using Xunit.v3;
 
 namespace RevitTestRunner.Commands;
 
@@ -14,16 +15,16 @@ namespace RevitTestRunner.Commands;
 [Transaction(TransactionMode.Manual)]
 public class StartupCommand : ExternalCommand
 {
-    private RevitTestRunnerViewModel viewModel = new();
+    private readonly RevitTestRunnerViewModel _viewModel = new();
 
-    const string assemblyFileName =
-        @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.xunitv3.Tests\bin\Debug\net8.0\RevitTestRunner.xunitv3.Tests.dll";
+    private const string ASSEMBLY_FILE_NAME =
+        @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestRunner.xunitv3.Tests\bin\Debug R25\RevitTestRunner.xunitv3.Tests.dll";
 
     public override void Execute()
     {
         RunXunitTests();
 
-        var view = new RevitTestRunnerView(viewModel);
+        var view = new RevitTestRunnerView(_viewModel);
         view.ShowDialog();
     }
 
@@ -33,7 +34,7 @@ public class StartupCommand : ExternalCommand
 
         project.Add(new XunitProjectAssembly(
             project,
-            assemblyFileName,
+            ASSEMBLY_FILE_NAME,
             new AssemblyMetadata(3, ".netcoreapp")));
 
         var assembly = project.Assemblies.First();
@@ -52,6 +53,6 @@ public class StartupCommand : ExternalCommand
 
         testExecutionSink.Finished.WaitOne(); // block until tests finish
 
-        viewModel.Messages.AddRange(testExecutionSink.Messages);
+        _viewModel.Messages.AddRange(testExecutionSink.Messages);
     }
 }

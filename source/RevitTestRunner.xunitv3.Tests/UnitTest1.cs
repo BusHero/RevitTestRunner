@@ -1,19 +1,18 @@
+using Autodesk.Revit.UI;
+
 namespace RevitTestRunner.xunitv3.Tests;
 
 public class UnitTest1
 {
     [Fact]
-    public void Test1()
+    public void PassingTest()
     {
         Assert.True(true);
     }
-}
-
-public class RevitApiTests
-{
+    
     [Fact]
-    public void Foo()
+    public void FailingTest()
     {
-        
+        Assert.True(true);
     }
 }
