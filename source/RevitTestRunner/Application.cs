@@ -2,6 +2,8 @@
 
 using Nice3point.Revit.Toolkit.External;
 
+using RevitTestLibrary.Common;
+
 using RevitTestRunner.Commands;
 
 namespace RevitTestRunner;
@@ -16,6 +18,11 @@ public class Application : ExternalApplication
 
     public override void OnStartup()
     {
+        xru.Initialize(new Dictionary<string, object>
+        {
+            ["UIApplication"] = UiApplication,
+        });
+
         Task.Run(async () =>
         {
             var server = new Server(

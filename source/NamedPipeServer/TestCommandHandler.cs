@@ -1,5 +1,8 @@
 using Xunit;
 using Xunit.Runner.Common;
+using Xunit.Runner.InProc.SystemConsole;
+using Xunit.Runner.v3;
+using Xunit.v3;
 
 namespace NamedPipeServer;
 
@@ -12,6 +15,8 @@ public class TestCommandHandler : ITestCommandHandler
 
     private static bool RunXunitTests(string assemblyFileName)
     {
+        AppDomain.CurrentDomain.Load(typeof(ConsoleRunnerInProcess).Assembly.GetName());
+
         var project = new XunitProject();
 
         project.Add(new XunitProjectAssembly(
@@ -21,13 +26,13 @@ public class TestCommandHandler : ITestCommandHandler
 
         var assembly = project.Assemblies.First();
 
-        var controller = XunitFrontController.Create(assembly)
-                         ?? throw new ArgumentException("not an xUnit.net test assembly: {0}",
-                             assembly.AssemblyFileName);
+        var controller2 = Xunit3.ForDiscoveryAndExecution(
+            assembly,
+            testProcessLauncher: InProcessTestProcessLauncher.Instance);
 
         using var testExecutionSink = new TestExecutionSink();
 
-        controller.FindAndRun(
+        controller2.FindAndRun(
             testExecutionSink,
             new FrontControllerFindAndRunSettings(
                 TestFrameworkOptions.ForDiscovery(assembly.Configuration),

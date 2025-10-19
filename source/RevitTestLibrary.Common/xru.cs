@@ -1,14 +1,14 @@
-using Autodesk.Revit.UI;
+using JetBrains.Annotations;
 
 namespace RevitTestLibrary.Common;
 
 public static class xru
 {
-    public static UIApplication? UiApplication { get; private set; }
-    
+    public static Dictionary<string, object> Data { get; private set; }
+
     [UsedImplicitly]
-    public static void Initialize(UIApplication uiApplication)
+    public static void Initialize(Dictionary<string, object> data)
     {
-        UiApplication = uiApplication;
+        Data = data;
     }
 }
