@@ -1,7 +1,9 @@
-﻿using System.Diagnostics;
+﻿using NamedPipeServer;
 
-var revitPath = @"C:\Program Files\Autodesk\Revit 2025\Revit.exe";
-var addinCmd = "RunTestsCommand";
+var server = new Server(
+    "test-pipe",
+    new TestCommandHandler());
 
-var process = Process.Start(revitPath, $"/language ENU");
-process.WaitForExit();
+Console.WriteLine("Starting server...");
+
+await server.StartAsync();

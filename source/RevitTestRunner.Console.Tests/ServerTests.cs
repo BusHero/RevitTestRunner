@@ -18,7 +18,7 @@ public class ServerTests
     {
         var task = StartServerAsync(
             Substitute.For<ITestCommandHandler>(),
-            pipeName, 
+            pipeName,
             TestContext.Current.CancellationToken);
 
         using var source = new CancellationTokenSource(TimeSpan.FromSeconds(2));
@@ -36,7 +36,7 @@ public class ServerTests
     {
         var task = StartServerAsync(
             Substitute.For<ITestCommandHandler>(),
-            pipeName, 
+            pipeName,
             TestContext.Current.CancellationToken);
 
         using var source = new CancellationTokenSource(TimeSpan.FromSeconds(1));
@@ -50,7 +50,7 @@ public class ServerTests
     {
         var task = StartServerAsync(
             Substitute.For<ITestCommandHandler>(),
-            pipeName, 
+            pipeName,
             TestContext.Current.CancellationToken);
 
         using var source = new CancellationTokenSource(TimeSpan.FromSeconds(1));
@@ -66,7 +66,7 @@ public class ServerTests
     {
         var task = StartServerAsync(
             Substitute.For<ITestCommandHandler>(),
-            pipeName, 
+            pipeName,
             TestContext.Current.CancellationToken);
 
         using var source = new CancellationTokenSource(TimeSpan.FromSeconds(1));
@@ -84,7 +84,7 @@ public class ServerTests
     {
         _ = StartServerAsync(
             Substitute.For<ITestCommandHandler>(),
-            pipeName, 
+            pipeName,
             TestContext.Current.CancellationToken);
 
         using var source = new CancellationTokenSource(
@@ -150,7 +150,7 @@ public class ServerTests
         string pipeName,
         CancellationToken cancellationToken)
     {
-        await using var pipeServer = new Server(pipeName, testCommandHandler);
+        var pipeServer = new Server(pipeName, testCommandHandler);
         await pipeServer.StartAsync(cancellationToken);
     }
 }
