@@ -22,13 +22,13 @@ public class Server(
                 using var reader = new StreamReader(pipeServer, leaveOpen: true);
                 writer.AutoFlush = true;
 
-                await writer.WriteLineAsync("PING");
+                // await writer.WriteLineAsync("PING");
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var line = await reader.ReadLineAsync(cancellationToken);
                     testCommandHandler.Handle(line!);
-                    await writer.WriteLineAsync("PING");
+                    // await writer.WriteLineAsync("PING");
                 }
             }
             catch (IOException)

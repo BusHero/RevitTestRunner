@@ -43,6 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\NamedPipeServer\NamedPipeServer.csproj" />
       <ProjectReference Include="..\RevitTestLibrary.Common\RevitTestLibrary.Common.csproj" />
     </ItemGroup>
 
