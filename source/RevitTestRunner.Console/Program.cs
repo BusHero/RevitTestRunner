@@ -30,6 +30,8 @@ using var source = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 await writer.WriteLineAsync(
     @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\PassingTestAssembly\bin\Release\net8.0\PassingTestAssembly.dll");
 
-
 await writer.WriteLineAsync(
     @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\FailingTestAssembly\bin\Release\net8.0\FailingTestAssembly.dll");
+
+await writer.WriteLineAsync(
+    @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestAssembly\bin\Release R25\RevitTestAssembly.dll");
