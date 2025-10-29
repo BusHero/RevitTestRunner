@@ -8,6 +8,7 @@
         <TargetFramework>net8.0-windows</TargetFramework>
         <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
         <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+        <CaptureOutput>true</CaptureOutput>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,7 +21,8 @@
 
     <ItemGroup>
         <PackageReference Include="AutoFixture.Xunit3" Version="4.19.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="CliWrap" Version="3.9.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
         <PackageReference Include="NSubstitute" Version="5.3.0" />
         <PackageReference Include="Shouldly" Version="4.3.0" />
         <PackageReference Include="xunit.v3" Version="3.1.0" />

@@ -1,23 +1,19 @@
-using System.Collections.ObjectModel;
-using System.Reflection;
+using CliWrap;
 
 using NamedPipeServer;
 
-using RevitTestLibrary.Common;
-
 using Shouldly;
-
-using Xunit.Runner.InProc.SystemConsole;
 
 namespace RevitTestRunner.Console.Tests;
 
 public class TestCommandHandlerTests
 {
+    private const string CONFIGURATION = "net8.0";
+
     [Fact]
-    public void TestPassingAssembly()
+    public async Task TestPassingAssembly()
     {
-        const string assemblyFileName =
-            @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\PassingTestAssembly\bin\Release\net8.0\PassingTestAssembly.dll";
+        var assemblyFileName = await BuildProject("PassingTestAssembly", CONFIGURATION);
 
         var handler = new TestCommandHandler();
 
@@ -27,10 +23,9 @@ public class TestCommandHandlerTests
     }
 
     [Fact]
-    public void TestFailingAssembly()
+    public async Task TestFailingAssembly()
     {
-        const string assemblyFileName =
-            @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\FailingTestAssembly\bin\Release\net8.0\FailingTestAssembly.dll";
+        var assemblyFileName = await BuildProject("FailingTestAssembly", CONFIGURATION);
 
         var handler = new TestCommandHandler();
 
@@ -39,42 +34,31 @@ public class TestCommandHandlerTests
         result.ShouldBeFalse();
     }
 
-    [Fact]
-    public void Foo()
+    private static async Task<string> BuildProject(string projectName, string configuration)
     {
-        AppDomain.CurrentDomain.Load(typeof(ConsoleRunnerInProcess).Assembly.GetName());
-        
-        xru.Initialize(new Dictionary<string,object>()
-        {
-            
-        });
-        const string assemblyFileName =
-            @"C:\Users\Petru\projects\revit-projects\RevitTestRunner\source\RevitTestAssembly\bin\Release R25\RevitTestAssembly.dll";
+        var workingDirPath = Directory.GetParent(AppContext.BaseDirectory)!
+            .Parent!
+            .Parent!
+            .Parent!
+            .Parent!
+            .FullName;
 
-        var handler = new TestCommandHandler();
+        await Cli.Wrap("dotnet")
+            .WithArguments(x => x
+                .Add(["build", projectName])
+                .Add(["--configuration", configuration]))
+            .WithWorkingDirectory("")
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(System.Console.WriteLine))
+            .WithStandardErrorPipe(PipeTarget.ToDelegate(System.Console.WriteLine))
+            .WithWorkingDirectory(workingDirPath)
+            .ExecuteAsync(TestContext.Current.CancellationToken);
 
-        var result = handler.Handle(assemblyFileName);
-
-        result.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void Bar()
-    {
-        
-        var assembly = AppDomain.CurrentDomain
-            .GetAssemblies()
-            .Select(x => x.GetName().Name)
-            .Where(x => x.Contains("xunit"))
-            .ToArray();
-
-        assembly.ShouldContain("xunit.v3.runner.inproc.console");
-    }
-}
-
-public class Fuck : IDisposable
-{
-    public void Dispose()
-    {
+        return Path.Combine(
+            workingDirPath,
+            projectName,
+            "bin",
+            "Release",
+            configuration,
+            $"{projectName}.dll");
     }
 }
